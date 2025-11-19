@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        DOCKERHUB_CREDENTIALS = creddentials('dockerhub-creds')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         IMAGE_NAME = "sagargoud/jenkins-java-app"
     }
 
