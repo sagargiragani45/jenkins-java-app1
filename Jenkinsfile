@@ -10,6 +10,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         IMAGE_NAME = "sagargoud/jenkins-java-app"
+        DOCKER_BUILDKIT = "0"
     }
 
     stages {
