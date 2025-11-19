@@ -4,20 +4,19 @@ pipeline {
 
     tools {
         maven 'Maven3'
-        jdk 'JDK17'
+        jdk 'JDK11'
     }
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        IMAGE_NAME = "sagargiragani/jenkins-java-app"
-        DOCKER_BUILDKIT = "0"
+        DOCKERHUB_CREDENTIALS = creddentials('dockerhub-creds')
+        IMAGE_NAME = "sagargoud/jenkins-java-app"
     }
 
     stages {
         stage('clone repository') {
             steps {
                 git branch: 'master',
-                credentialsId: 'github-token',
+                creddentialsId: 'github-token',
                 url: 'https://github.com/sagargiragani45/jenkins-java-app1.git'
             }
         }
@@ -30,21 +29,34 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
+                script {
+                echo "Building docker image..."
+                app =docker.builf ("sagargiragani/jenkins-java-app:${BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                script {
+                    echo "Pushing Docker image to Docker Hub..."
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-cred') {
+                        app.push()}
+                }
             }
         }
 
-        stage('Docker Push') {
-            steps {
-                sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
-            }
-        }
+        
+
+    
 
     }
 }
     
 
            
+
+
+        
 
 
         
