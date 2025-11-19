@@ -4,7 +4,7 @@ pipeline {
 
     tools {
         maven 'Maven3'
-        jdk 'JDK11'
+        jdk 'JDK17'
     }
 
     environment {
@@ -16,7 +16,7 @@ pipeline {
         stage('clone repository') {
             steps {
                 git branch: 'master',
-                creddentialsId: 'github-token',
+                credentialsId: 'github-token',
                 url: 'https://github.com/sagargiragani45/jenkins-java-app1.git'
             }
         }
