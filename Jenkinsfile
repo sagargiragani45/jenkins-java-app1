@@ -35,12 +35,6 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --passwd-stdin"
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
                 sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
             }
         }
