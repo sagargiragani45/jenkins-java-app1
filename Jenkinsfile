@@ -7,44 +7,54 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "sagargiragani/jenkins-java-app"
-        DOCKERHUB = credentials('dockerhub-cred')
+        IMAGE = "sagargiragani/jenkins-java-app:${BUILD_NUMBER}"
+        DOCKER_CRED = credentials('dockerhub-cred')
     }
 
     stages {
 
-        stage('Clone Repo') {
+        stage('Clone Repository') {
             steps {
                 git branch: 'master',
-                    credentialsId: 'github-token',
-                    url: 'https://github.com/sagargiragani45/jenkins-java-app1.git'
+                credentialsId: 'github-token',
+                url: 'https://github.com/sagargiragani45/jenkins-java-app1.git'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build Maven') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh "mvn clean package -DskipTests"
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh '''
-                echo "Building Docker image..."
-                docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
-                '''
+                script {
+                    app = docker.build("${IMAGE}")
+                }
             }
         }
 
         stage('Docker Push') {
             steps {
-                sh '''
-                echo "Logging into Docker Hub..."
-                echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-cred') {
+                        app.push()
+                    }
+                }
+            }
+        }
 
-                echo "Pushing Docker image..."
-                docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-                '''
+        stage('Deploy to Kubernetes (CD)') {
+            steps {
+                script {
+                    sh """
+                        sed -i 's|jenkins-java-app:latest|jenkins-java-app:${BUILD_NUMBER}|g' k8s/deployment.yaml
+
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
+                    """
+                }
             }
         }
     }
