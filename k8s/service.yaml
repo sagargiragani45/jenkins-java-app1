@@ -1,0 +1,11 @@
+apiVersion: v1 
+kind: service 
+metadata:
+  name: jenkins-java-app-svc
+  spec:
+    type: LoadBalancer
+    ports:
+    - port: 8080
+      targetPort: 8080
+      selector:
+        app: jenkins-java-app

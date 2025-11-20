@@ -1,0 +1,21 @@
+apiversion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-java-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jenkins-java-app
+  template:
+    metadata:
+      labels:
+        app: jenkins-java-app
+    spec:
+      containers:
+      - name: jenkins-java-app
+        image: sagargiragani/jenkins-java-app:latest
+        
+        ports:
+        - containerPort: 8080
+
